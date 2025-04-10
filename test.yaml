@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: Stamp Collector Service
+  version: 1.0.0
+  description: API for managing a digital stamp collection loyalty program.
+servers:
+  - url: https://api.stampcollectorservice.com/v1
+    description: Production server
+paths:
+  /customers/{ccaId}/stamp-card:
+    get:
+      summary: Get the current stamp card for a customer
+      parameters:
+        - in: path
+          name: ccaId
+          required: true
+          schema:
+            type: string
+          description: The CCA ID of the customer
+      responses:
+        '200':
+          description: The current stamp card for the customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StampCard'
+        '400':
+          description: Invalid CCA ID
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    StampCard:
+      type: object
+      properties:
+        stamps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stamp'
+        rewards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reward'
+    Stamp:
+      type: object
+      properties:
+        id:
+          type: string
+        used:
+          type: boolean
+        transactionId:
+          type: string
+          nullable: true
+        redemptionChannel:
+          type: string
+          nullable: true
+    Reward:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - coupon
+        coupon:
+          $ref: '#/components/schemas/Coupon'
+    Coupon:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        redemptionNotice:
+          type: string
